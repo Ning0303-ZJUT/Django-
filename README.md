@@ -25,5 +25,13 @@ Jquery、BootStrap
 Mysql数据库  
 
 ## 界面展示
-
+![]()
+![]()
+![]()
+![]()
+![]()
+![]()
+![]()
+![]()
+管理员选修课审核![image](https://github.com/Ning0303-ZJUT/Django-/blob/main/img/admin-selection.png)
 
