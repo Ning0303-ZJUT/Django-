@@ -1,0 +1,80 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="container">
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                           aria-expanded="true" aria-controls="collapseOne">
+                            查询条件
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+                        <div class="search row" style="height: 60px;padding: 10px;margin: 8px;border-radius: 4px;">
+                            <form method="post" action="/grade/search/" class="form-horizontal">
+                                {% csrf_token %}
+                                <div class="form-group col-xs-6 col-md-4">
+                                    <label class="form-label" style="float:left;">学年</label>
+                                    <select name="year" id="year" class="form-control input-sm"
+                                            style="float:left;width: 55%;margin-left: 20px">
+                                        <option selected>请选择</option>
+                                        <option>2019-2020</option>
+                                        <option>2020-2021</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-xs-6 col-md-4">
+                                    <label class="form-label" style="float:left;">学期</label>
+                                    <select name="term" id="term" class="form-control input-sm col-xs-2"
+                                            style="float:left;width: 55%;margin-left: 20px;">
+                                        <option selected>请选择</option>
+                                        <option>1</option>
+                                        <option>2</option>
+                                    </select>
+                                </div>
+                                <input class="btn btn-primary col-xs-6 col-md-4" type="submit" value="查 询"
+                                       style="width: 100px"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                    成绩列表
+                </div>
+
+                <!-- Table -->
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>学年</th>
+                        <th>学期</th>
+                        <th>课程名</th>
+                        <th>成绩</th>
+                        <th>学分</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for obj in queryset %}
+                        <tr>
+                            <td>{{ obj.year }}</td>
+                            <td>{{ obj.term }}</td>
+                            <td>{{ obj.course.name }}</td>
+                            <td>{{ obj.grade }}</td>
+                            <td>{{ obj.course.credit }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <ul class="pagination">
+                {{ page_string }}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

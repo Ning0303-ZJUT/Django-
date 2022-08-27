@@ -1,0 +1,84 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                           aria-expanded="true" aria-controls="collapseOne">
+                            查询条件
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+                        <div class="search" style="height: 60px;padding: 5px;margin: 8px;border-radius: 4px;">
+                            <form method="post" action="{% url 'lesson_student_list' %}" class="form-horizontal">
+                                {% csrf_token %}
+                                <div class="form-group"
+                                     style="width:25%; border: 0px solid;float: left;box-sizing: border-box;margin-left: 60px;">
+                                    <label class="form-label">学年</label>
+                                    <select name="year" id="year" class="form-control input-sm">
+                                        <option selected>请选择</option>
+                                        <option>2019-2020</option>
+                                        <option>2020-2021</option>
+                                    </select>
+                                </div>
+                                <div class="form-group"
+                                     style="width:15%; border: 0px solid;float: left;box-sizing: border-box;margin-left: 100px;">
+                                    <label class="form-label">学期</label>
+                                    <select name="term" id="term" class="form-control input-sm col-xs-2">
+                                        <option selected>请选择</option>
+                                        <option>1</option>
+                                        <option>2</option>
+                                    </select>
+                                </div>
+                                <input class="btn btn-primary" type="submit" value="查 询"
+                                       style="width:80px; margin-left: 300px; margin-top: 20px"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                    课程列表
+                </div>
+
+                <!-- Table -->
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>学年</th>
+                        <th>学期</th>
+                        <th>课程名</th>
+                        <th>课程编号</th>
+                        <th>任课老师</th>
+                        <th>学分</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for obj in queryset %}
+                        <tr>
+                            <td>{{ obj.year }}</td>
+                            <td>{{ obj.term }}</td>
+                            <td>{{ obj.name }}</td>
+                            <td>{{ obj.lesson_id }}</td>
+                            <td>{{ obj.teacher.name }}</td>
+                            <td>{{ obj.credit }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <ul class="pagination">
+                {{ page_string }}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

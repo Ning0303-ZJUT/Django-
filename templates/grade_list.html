@@ -1,0 +1,59 @@
+{% extends 'layout_t.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                批量上传
+            </div>
+            <div class="row">
+                <form method="post" enctype="multipart/form-data" action="/grade/multi/">
+                    {% csrf_token %}
+                    <div class="form-group col-md-8" style="margin: 10px;position: center">
+                        <input type="file" name="exc" >
+                    </div>
+                    <input type="submit" value="上传" class="btn btn-info btn-sm col-md-4" style="width: 100px;margin: 10px">
+                </form>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                成绩列表
+            </div>
+
+            <!-- Table -->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>学年</th>
+                    <th>学期</th>
+                    <th>课程名称</th>
+                    <th>学号</th>
+                    <th>姓名</th>
+                    <th>成绩</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obj in queryset %}
+                    <tr>
+                        <td>{{ obj.year }}</td>
+                        <td>{{ obj.term }}</td>
+                        <td>{{ obj.course.name }}</td>
+                        <td>{{ obj.student_id }}</td>
+                        <td>{{ obj.student.name }}</td>
+                        <td>{{ obj.grade }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <ul class="pagination">
+            {{ page_string }}
+        </ul>
+    </div>
+{% endblock %}

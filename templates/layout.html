@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-3.4.1-dist/css/bootstrap.min.css' %}">
+    <style>
+        .navbar {
+            border-radius: 0;
+        }
+    </style>
+    {% block css %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">高校成绩管理系统</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="{% url 'grade_search' %}">成绩查询</a></li>
+                <li><a href="{% url 'lesson_student_list' %}">课表查询</a></li>
+                <li><a href="{% url 'selection_list_student' %}">选课</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">{{ request.session.info.name }} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'student_info' %}">我的信息</a></li>
+                        <li><a type="button" id="btnEditPwd">修改密码</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/logout/">注销</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div>
+    {% block content %}{% endblock %}
+
+    <!-- 对话框-->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">修改密码</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="formEdit" method="post" action="/student/password/">
+                        {% csrf_token %}
+                        <div class="clearfix">
+                            <div class="col-xs-6">
+                                <div class="input-group" style="position: relative;margin-bottom: 20px;">
+                                    <span class="input-group-addon" id="basic-addon1" style="width: 80px">姓名</span>
+                                    <input name="input_o_pwd" placeholder="请输入原密码" class="form-control" type="text" aria-describedby="basic-addon1">
+                                    <span class="error-msg" style="color:red; position: absolute"></span>
+                                </div>
+                                <div class="input-group" style="position: relative;margin-bottom: 20px;" >
+                                    <span class="input-group-addon" id="basic-addon1" style="width: 80px">新密码</span>
+                                    <input name="input_n_pwd" placeholder="请输入新密码" class="form-control" type="text" aria-describedby="basic-addon1">
+                                    <span class="error-msg" style="color:red; position: absolute"></span>
+                                </div>
+                                <div class="input-group" style="position: relative;margin-bottom: 20px;" style="width: 80px">
+                                    <span class="input-group-addon" id="basic-addon1">确认密码</span>
+                                    <input name="input_s_pwd" placeholder="请输入确认密码" class="form-control" type="text" aria-describedby="basic-addon1">
+                                    <span class="error-msg" style="color:red; position: absolute"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                    <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-3.4.1-dist/js/bootstrap.min.js' %}"></script>
+{% block js %}{% endblock %}
+<script type="text/javascript">
+     $(function () {
+         bindBtnEditPwdEvent();
+         bindBtnSaveEvent();
+     })
+
+     function bindBtnEditPwdEvent(){
+         $("#btnEditPwd").click(function () {
+             //清空对话框的数据
+                $('#formEdit')[0].reset();
+
+                //设置对话框的标题
+                $('#myModalLabel').text('修改密码');
+                //点击新建按钮，现实对话框
+                $('#myModal').modal('show');
+         });
+     }
+
+     function bindBtnSaveEvent() {
+         $("#btnSave").click(function () {
+            doEdit();
+         })
+     }
+
+     function doEdit() {
+            $.ajax({
+                url: "/student/password/",
+                type: "post",
+                data: $('#formEdit').serialize(),
+                dataType: 'JSON',
+                success: function (res) {
+                    if (res.status) {
+                        // alert('创建成功');
+                        //清空表单 $("#formAdd")JQuery对象 -> $("#formAdd")[0] DOM对象
+                        $("#formEdit")[0].reset();
+
+                        //关闭对话框
+                        $('#myModal').modal('hide');
+
+                        //刷新页面
+                        location.reload();
+                    } else {
+                        if (res.tips) {
+                            alert(res.tips);
+                        } else {
+                            //显示错误信息
+                            $.each(res.error, function (name, errorList) {
+                                $("#id_" + name).next().text(errorList[0]);
+                            })
+                        }
+                    }
+                }
+            })
+        }
+</script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="container">
+        <div style="margin-bottom: 10px" class="clearfix">
+            <div style="float: right;width: 300px ">
+                <form method="get">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="搜索..."
+                               value={{ search_data }}>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div><!-- /input-group -->
+                </form>
+            </div>
+        </div>
+        <!-- 查询条件-->
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="headingOne">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                       aria-expanded="true" aria-controls="collapseOne">
+                        查询条件
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <div class="search row" style="height: 60px;padding: 5px;margin: 8px;border-radius: 4px;">
+                        <form method="post" action="{% url 'selection_list_student' %}" class="form-horizontal">
+                            {% csrf_token %}
+                            <div class="form-group col-xs-6 col-md-4">
+                                <label class="form-label">学年</label>
+                                <select name="year" id="year" class="form-control input-sm">
+                                    <option selected>请选择</option>
+                                    <option>2019-2020</option>
+                                    <option>2020-2021</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-6 col-md-4" style="margin-left: 20px">
+                                <label class="form-label">学期</label>
+                                <select name="term" id="term" class="form-control input-sm col-xs-2">
+                                    <option selected>请选择</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                </select>
+                            </div>
+                            <input class="btn btn-primary col-xs-6 col-md-4" type="submit" value="查 询"
+                                   style="width: 100px; margin-left: 50px;margin-top: 20px"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                选修课列表
+            </div>
+
+            <!-- Table -->
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>课程名称</th>
+                    <th>课程编号</th>
+                    <th>学年</th>
+                    <th>学期</th>
+                    <th>学分</th>
+                    <th>任课老师</th>
+                    <th>课程容量</th>
+                    <th>已报名(人)</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for obj in queryset %}
+                    <tr>
+                        <th>{{ obj.name }}</th>
+                        <td>{{ obj.lesson_id }}</td>
+                        <td>{{ obj.year }}</td>
+                        <td>{{ obj.term }}</td>
+                        <td>{{ obj.credit }}</td>
+                        <td>{{ obj.teacher.name }}</td>
+                        <td>{{ obj.capacity }}</td>
+                        <td>{{ obj.apply_sum }}</td>
+                        <td>
+                            {% if obj.lesson_id in selected_list %}
+                            <input uid="{{ obj.lesson_id }}" class="btn btn-success btn-xs btn-apply" id="btn-apply"
+                                   type="button" value="报名" disabled="disabled">
+                            {% else %}
+                            <input uid="{{ obj.lesson_id }}" class="btn btn-success btn-xs btn-apply" id="btn-apply"
+                                   type="button" value="报名" >
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="clearfix">
+            <ul class="pagination">
+                {{ page_string }}
+
+            </ul>
+        </div>
+    </div>
+
+    <!--报名 对话框-->
+    <div class="modal fade" id="applyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="alert alert-success alert-dismissible fade in" role="alert">
+                <h4>是否确定报名？</h4>
+                <p style="margin: 10px 0; ">报名成功后，不可退课。</p>
+                <p style="text-align: right">
+                    <button id="btnConfirmApply" type="button" class="btn btn-success">确 定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取 消</button>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        var APPLY_ID;
+
+        $(function () {
+            bindBtnApplyEvent();
+            bindBtnConfirmApplyEvent();
+        })
+
+        function bindBtnApplyEvent() {
+            $(".btn-apply").click(function () {
+                //报名对话框
+                $("#applyModal").modal('show');
+
+                //获取当前行的id并赋值给全局变量
+                APPLY_ID = $(this).attr("uid");
+
+            });
+        }
+
+        function bindBtnConfirmApplyEvent() {
+            $("#btnConfirmApply").click(function () {
+                //点击确认按钮，将全局变量中要报名的id发送到后台
+                $.ajax({
+                    url: "/selection/apply/student/",   //=> /selection/apply/student/?uid=s123
+                    type: 'GET',
+                    dataType: "JSON",
+                    data: {
+                        uid: APPLY_ID,
+                    },
+                    success: function (res) {
+                        if (res.status) {
+                            {#document.getElementById("btn-apply").disabled = true;#}
+                            location.reload();
+                        } else {
+                            //报名失败
+                            alert(res.error);
+                        }
+                    }
+                })
+            });
+        }
+
+    </script>
+{% endblock %}
