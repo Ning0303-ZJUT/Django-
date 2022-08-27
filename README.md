@@ -25,13 +25,14 @@ Jquery、BootStrap
 Mysql数据库  
 
 ## 界面展示
-![]()
-![]()
-![]()
-![]()
-![]()
-![]()
-![]()
-![]()
+登录界面![image](https://github.com/Ning0303-ZJUT/Django-/blob/main/img/login.png)
+菜单栏![image](https://github.com/Ning0303-ZJUT/Django-/blob/main/img/menu.png)
+修改密码![image](https://github.com/Ning0303-ZJUT/Django-/blob/main/img/password-modify.png)
+学生信息/教师信息![image](https://github.com/Ning0303-ZJUT/Django-/blob/main/img/student-info.png)
+学生选课. 
+不能重复选课![image](https://github.com/Ning0303-ZJUT/Django-/blob/main/img/student-selection.png)
+教师成绩上传![image](https://github.com/Ning0303-ZJUT/Django-/blob/main/img/teacher-grade-upload.png)
+教师课表查询![image](https://github.com/Ning0303-ZJUT/Django-/blob/main/img/teacher-lesson-search.png)
+教师选修课申报结果查询![image](https://github.com/Ning0303-ZJUT/Django-/blob/main/img/teacher-selection-search.png)
 管理员选修课审核![image](https://github.com/Ning0303-ZJUT/Django-/blob/main/img/admin-selection.png)
 
